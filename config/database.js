@@ -2,29 +2,54 @@ const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
 // Configuración de la base de datos
-const sequelize = new Sequelize(
-  process.env.DB_NAME || 'vecinity_db',
-  process.env.DB_USER || 'root',
-  process.env.DB_PASSWORD || 'root',
-  {
-    host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT || 3306,
-    dialect: process.env.DB_DIALECT || 'mysql',
-    logging: process.env.NODE_ENV === 'development' ? console.log : false,
-    pool: {
-      max: 5,
-      min: 0,
-      acquire: 30000,
-      idle: 10000
+// Configuración de la base de datos
+let sequelize;
+
+if (process.env.DATABASE_URL) {
+  // Configuración para Producción (Render)
+  sequelize = new Sequelize(process.env.DATABASE_URL, {
+    dialect: 'postgres',
+    protocol: 'postgres',
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
     },
+    logging: false,
     define: {
       timestamps: true,
       underscored: true,
       freezeTableName: true
     },
     timezone: '+00:00'
-  }
-);
+  });
+} else {
+  // Configuración para Desarrollo Local
+  sequelize = new Sequelize(
+    process.env.DB_NAME || 'vecinity_db',
+    process.env.DB_USER || 'postgres',
+    process.env.DB_PASSWORD || 'root',
+    {
+      host: process.env.DB_HOST || 'localhost',
+      port: process.env.DB_PORT || 5432,
+      dialect: process.env.DB_DIALECT || 'postgres',
+      logging: process.env.NODE_ENV === 'development' ? console.log : false,
+      pool: {
+        max: 5,
+        min: 0,
+        acquire: 30000,
+        idle: 10000
+      },
+      define: {
+        timestamps: true,
+        underscored: true,
+        freezeTableName: true
+      },
+      // timezone: '+00:00' // Postgres maneja esto diferente
+    }
+  );
+}
 
 // Función para probar la conexión
 const testConnection = async () => {
