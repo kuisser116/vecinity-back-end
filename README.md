@@ -1,0 +1,10 @@
+DB_HOST=localhost 
+DB_USER=root
+DB_PASSWORD=root
+DB_NAME=vecinity_db
+DB_PORT=3306 
+JWT_SECRET=mi_super_secreto_jwt_seguro_2024 
+JWT_EXPIRE=30d  
+BCRYPT_ROUNDS=12  
+PORT=5000  
+NODE_ENV=development 
